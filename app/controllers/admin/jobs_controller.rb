@@ -1,8 +1,28 @@
 class Admin::JobsController < ApplicationController
   before_action :authenticate_user!, only: [:new, :create, :update, :edit, :destroy]
+  layout "admin"
+
+  def publish
+    @job = Job.find(params[:id])
+    @job.is_hidden = false
+    @job.save
+    redirect_to :back
+  end
+
+  def hide
+    @job = Job.find(params[:id])
+    @job.is_hidden = true
+    @job.save
+    redirect_to :back
+  end
 
   def show
     @job = Job.find(params[:id])
+
+    if @job.is_hidden
+      flash[:warning] = "This Job already archieved"
+      redirect_to root_path
+    end
   end
 
   def index
